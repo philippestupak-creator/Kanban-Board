@@ -1,0 +1,8 @@
+node_modules/
+.env
+.vscode/
+dist/
+*.db
+*.log
+*.db-shm
+*.db-wal
