@@ -34,7 +34,10 @@ app.get('/cards', (req, res) => {
 // POST /cards/:list_id/:text: create a card
 // 201 created | 400 blank text | 404 list not found
 app.post('/cards/:list_id/:text', (req, res) => {
-  res.status(201).json({});   // TODO: INSERT and return the new card
+    const stmt = db.prepare('INSERT INTO cards values (null, ?, ?) returning *');
+    const data = stmt.run(req.params.list_id, req.params.text);
+
+    res.status(201).json(data);
 });
 
 // DELETE /cards/:id: delete a card
