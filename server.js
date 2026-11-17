@@ -4,7 +4,7 @@ const app = express();
 app.use(express.static('public'));
 process.loadEnvFile('.env');
 
-const { Database, StatementSync } = require('node:sqlite');
+const { Database} = require('node:sqlite');
 const db = new Database('kanban.db');
 
 const lists = [
@@ -20,11 +20,15 @@ let cards = [
 
 
 app.get('/lists', (req, res) => {
-  res.json(lists);
+    const stmt = db.prepare('SELECT name,id FROM lists order by id');
+    const data = stmt.all();
+    res.json(data);
 });
 
 app.get('/cards', (req, res) => {
-  res.json(cards);
+    const stmt = db.prepare('SELECT id,list_id,text FROM cards order by id');
+    const cards = stmt.all();
+    res.json(cards);
 });
 
 // POST /cards/:list_id/:text: create a card
