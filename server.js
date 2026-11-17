@@ -4,6 +4,9 @@ const app = express();
 app.use(express.static('public'));
 process.loadEnvFile('.env');
 
+const { Database, StatementSync } = require('node:sqlite');
+const db = new Database('kanban.db');
+
 const lists = [
   { id: 1, name: 'To Do' },
   { id: 2, name: 'Doing' },
