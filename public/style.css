@@ -14,8 +14,32 @@ body {
     padding: 0.5rem;
 }
 
+.column-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Shown while a card is dragged over a column. */
+.column.drop-target {
+    background: #eeeeee;
+    border-style: dashed;
+}
+
 .card {
     border: 1px solid #cccccc;
     padding: 0.5rem;
     margin-bottom: 0.5rem;
+    cursor: grab;
+}
+
+.card-edit {
+    width: 100%;
+}
+
+.add-list-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    width: 10rem;
 }
