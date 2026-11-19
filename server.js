@@ -39,7 +39,7 @@ app.post('/cards/:list_id/:text', (req, res) => {
         return;
     }
     const stmt = db.prepare('INSERT INTO cards values (null, ?, ?) returning *');
-    const data = stmt.run(req.params.list_id, req.params.text.trim());
+    const data = stmt.get(req.params.list_id, req.params.text.trim());
 
     res.status(201).json(data);
 });
@@ -50,6 +50,13 @@ app.delete('/cards/:id', (req, res) => {
     const stmt = db.prepare('DELETE FROM cards WHERE id = ?');
     stmt.run(req.params.id);
 
+    res.status(204).end();
+});
+
+app.delete('/lists/:id', (req, res) => {
+    const stmt = db.prepare('DELETE FROM lists WHERE id = ?');
+    stmt.run(req.params.id);
+    
     res.status(204).end();
 });
 
