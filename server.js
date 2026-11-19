@@ -34,8 +34,12 @@ app.get('/cards', (req, res) => {
 // POST /cards/:list_id/:text: create a card
 // 201 created | 400 blank text | 404 list not found
 app.post('/cards/:list_id/:text', (req, res) => {
+    if (req.params.text.trim() === '') {
+        res.status(400).json({ error: 'Blank text' });
+        return;
+    }
     const stmt = db.prepare('INSERT INTO cards values (null, ?, ?) returning *');
-    const data = stmt.run(req.params.list_id, req.params.text);
+    const data = stmt.run(req.params.list_id, req.params.text.trim());
 
     res.status(201).json(data);
 });
@@ -43,10 +47,13 @@ app.post('/cards/:list_id/:text', (req, res) => {
 // DELETE /cards/:id: delete a card
 // 204 deleted | 404 card not found
 app.delete('/cards/:id', (req, res) => {
-  res.status(204).end();   // TODO: DELETE FROM cards WHERE id = ?
+    const stmt = db.prepare('DELETE FROM cards WHERE id = ?');
+    stmt.run(req.params.id);
+
+    res.status(204).end();
 });
 
 app.listen(process.env.PORT, () => {
-  console.log(`Listening on http://localhost:${process.env.PORT}`);
+    console.log(`Listening on http://localhost:${process.env.PORT}`);
 });
 
