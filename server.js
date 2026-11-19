@@ -39,7 +39,7 @@ app.post('/cards/:list_id/:text', (req, res) => {
         return;
     }
     const stmt = db.prepare('INSERT INTO cards values (null, ?, ?) returning *');
-    const data = stmt.run(req.params.list_id, req.params.text.trim());
+    const data = stmt.get(req.params.list_id, req.params.text.trim());
 
     res.status(201).json(data);
 });
@@ -78,12 +78,32 @@ app.delete('/cards/:id', (req, res) => {
 // 200 updated | 400 id is not a number or text is blank (after trimming) | 404 card not found
 // Body on 200: the updated card row, e.g. { "id": 1, "list_id": 2, "text": "new text" }
 // Store the trimmed text.
+app.put('/cards/:id/:text', (req, res) => {
+    if (req.params.text.trim() === '') {
+        res.status(400).json({ error: 'Blank text' });
+        return;
+    }
+    const stmt = db.prepare('UPDATE cards SET text = ? WHERE id = ? returning *');
+    const data = stmt.get(req.params.text.trim(), req.params.id);
+
+    res.json(data);
+});
 
 // PUT /cards/:id/list/:list_id: move a card to another list (drag and drop)
 // 200 moved | 400 id or list_id is not a number | 404 card not found or list not found
 // Body on 200: the updated card row, e.g. { "id": 1, "list_id": 3, "text": "Example card" }
 // This route has four path segments, so it does not conflict with
 // PUT /cards/:id/:text, which has three.
+app.put('/cards/:id/list/:list_id', (req, res) => {
+    if (req.params.list_id.trim() === '') {
+        res.status(400).json({ error: 'Blank list_id' });
+        return;
+    }
+    const stmt = db.prepare('UPDATE cards SET list_id = ? WHERE id = ? returning *');
+    const data = stmt.get(req.params.list_id, req.params.id);
+
+    res.json(data);
+});
 
 app.listen(process.env.PORT, () => {
     console.log(`Listening on http://localhost:${process.env.PORT}`);
