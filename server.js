@@ -34,13 +34,21 @@ app.get('/cards', (req, res) => {
 // POST /cards/:list_id/:text: create a card
 // 201 created | 400 blank text | 404 list not found
 app.post('/cards/:list_id/:text', (req, res) => {
+    if (req.params.text.trim() === '') {
+        res.status(400).json({ error: 'Blank text' });
+        return;
+    }
+    const stmt = db.prepare('insert into cards values (null, ?, ?)');
+    const data = stmt.run(req.params.list_id, req.params.text.trim());
   res.status(201).json({});   // TODO: INSERT and return the new card
 });
 
 // DELETE /cards/:id: delete a card
 // 204 deleted | 404 card not found
 app.delete('/cards/:id', (req, res) => {
-  res.status(204).end();   // TODO: DELETE FROM cards WHERE id = ?
+    const stmt = db.prepare('delete from cards where id = ?');
+    stmt.run(req.params.id);
+    res.status(204).end();   // TODO: DELETE FROM cards WHERE id = ?
 });
 
 app.listen(process.env.PORT, () => {
